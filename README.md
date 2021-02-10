@@ -1,9 +1,9 @@
-**Demo CLI**
+# Auth Commands V1 (auth)
 
-A simple implementation of a Go CLI with the https://icanhazdadjoke.com/api API for demo purposes.  
+After cloning repo, navigate into lr folder and run **go install**  
 
 Commands:
 
-- _random_ : Returns a random joke
-- _exact_ : Returns a specific joke depending on the ID passed. Pass the id with flag --jokeID.
-            (Sample ID's : R7UfaahVfFd, pzXvHl3EYg, MZ82EIB5hFd)
+- **lr auth check --email**  : Checks if email exists or not on your site. 
+- **lr auth check --username**: Checks if username exists or not on your site. 
+- **lr auth verify_resend --email** : Resends the verification email to the user.
