@@ -3,11 +3,14 @@ package login
 import (
 	"encoding/json"
 	"errors"
-	"log"
+	"io/ioutil"
 	"lr-cli/cmdutil"
 	"lr-cli/config"
 	"lr-cli/request"
 	"net/http"
+	"os"
+	"os/user"
+	"path/filepath"
 
 	"github.com/spf13/cobra"
 )
@@ -89,8 +92,17 @@ func doLogin(opts *LoginOpts) error {
 	if err != nil {
 		return err
 	}
+	return storeCreds(&resObj)
+}
 
-	log.Printf("%s", resObj.AppName)
+func storeCreds(cred *LoginResponse) error {
+	user, _ := user.Current()
 
-	return nil
+	os.Mkdir(filepath.Join(user.HomeDir, ".lrcli"), 0755)
+	fileName := filepath.Join(user.HomeDir, ".lrcli", "token.json")
+
+	dataBytes, _ := json.Marshal(cred)
+
+	return ioutil.WriteFile(fileName, dataBytes, 0644)
+
 }

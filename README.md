@@ -21,11 +21,11 @@ lr
         - social <provider>
         - domain
         - account
-    - remove
+    - delete
         - social <provider>
         - domain
         - account --uid, --email
-    - update
+    - set
         - social <provider>
         - domain
         - account --uid
