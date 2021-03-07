@@ -53,8 +53,13 @@ type LoginResponse struct { //response
 	XToken string `json:"xtoken"`
 }
 
+func validation() {
+
+}
+
 func getData2() {
 	if emailLogin != "" && password != "" {
+
 		at := make(map[string]interface{})
 		url1 = "https://devapi.lrinternal.com/identity/v2/auth/login/2FA?apiKey=ddff8a63-cbc3-4723-8415-b910c4d8770d&loginUrl=&emailTemplate=&verificationUrl=https://demotesting.devhub.lrinternal.com/auth.aspx?return_url=https://dev-dashboard.lrinternal.com/login&smsTemplate=&smsTemplate2FA="
 		responseBytes := gethttp2(url1)
@@ -68,7 +73,6 @@ func getData2() {
 		if errFile != nil {
 			logrus.Error(err)
 		}
-
 		file, err := ioutil.ReadFile(filename)
 		if err != nil {
 			logrus.Error(err)

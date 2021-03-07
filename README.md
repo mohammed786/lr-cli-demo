@@ -1,10 +1,47 @@
-# Auth Commands V1 (auth)
+# Introduction
 
-After cloning repo, navigate into lr folder and run **go install**  
+This is the LoginRadius CLI project
 
-Commands:
+## List of Commands supported in Beta
 
-- **lr auth check --email**  : Checks if email exists or not on your site. 
-- **lr auth check --username**: Checks if username exists or not on your site. 
-- **lr auth verify_resend --email** : Resends the verification email to the user.
-- **lr login --email --password** : Logs in the user (Demotesting) 
+```
+lr
+    - help
+    - register
+    - login
+    - get
+        - servertime
+        - config
+        - social <provider>
+        - domain
+        - account
+        - sites
+        - theme
+    - add
+        - social <provider>
+        - domain
+        - account
+    - delete
+        - social <provider>
+        - domain
+        - account --uid, --email
+    - set
+        - social <provider>
+        - domain
+        - account --uid
+        - account-email --uid
+        - account-phone --uid
+        - sec-ques --uid
+        - theme
+    - verify
+        - email <email>
+        - username <username>
+        - resend <username>, <email>
+        - invalidate 
+    
+    - get-password 
+    - set-password
+    - reset-secret
+```   
+       
+       
