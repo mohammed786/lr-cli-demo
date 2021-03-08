@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"io/ioutil"
+	"log"
 	"lr-cli/cmdutil"
 	"lr-cli/config"
 	"lr-cli/request"
@@ -30,10 +31,11 @@ type LoginResponse struct {
 	AppName string `json:"app_name"`
 }
 
+var fileName string
+
 func NewLoginCmd() *cobra.Command {
 
 	opts := &LoginOpts{}
-
 	cmd := &cobra.Command{
 		Use:   "login",
 		Short: "Login to LR account",
@@ -45,7 +47,8 @@ func NewLoginCmd() *cobra.Command {
 			if opts.Password == "" {
 				return &cmdutil.FlagError{Err: errors.New("`--password` is require argument")}
 			}
-			return doLogin(opts)
+			return validateLogin(opts)
+
 		},
 	}
 	fl := cmd.Flags()
@@ -55,7 +58,35 @@ func NewLoginCmd() *cobra.Command {
 	return cmd
 }
 
+func validateLogin(opts *LoginOpts) error {
+	var v1 Token     //access
+	v2 := getCreds() //x
+	if v2.XSign != "" && v2.XToken != "" {
+		conf := config.GetInstance()
+		validateURL := conf.AdminConsoleAPIDomain + "/auth/validatetoken"
+		headersV := map[string]string{
+			"Origin":                  "https://dev-dashboard.lrinternal.com",
+			"x-is-loginradius--sign":  v2.XSign,
+			"x-is-loginradius--token": v2.XToken,
+			"x-is-loginradius-ajax":   "true",
+		}
+
+		resp, err := request.Rest(http.MethodGet, validateURL, headersV, "")
+		if err != nil {
+			return err
+		}
+		err = json.Unmarshal(resp, &v1)
+		if v1.AccessToken != "" {
+			return &cmdutil.FlagError{Err: errors.New("Already logged in ")}
+		} else {
+			return doLogin(opts)
+		}
+	}
+	return doLogin(opts)
+}
+
 func doLogin(opts *LoginOpts) error {
+	log.Printf("%s", opts.Email)
 	conf := config.GetInstance()
 	hubPageURL := conf.LoginRadiusAPIDomain + "/identity/v2/auth/login/2FA?apiKey=" + conf.LoginRadiusAPIKey
 	body, _ := json.Marshal(opts)
@@ -99,10 +130,24 @@ func storeCreds(cred *LoginResponse) error {
 	user, _ := user.Current()
 
 	os.Mkdir(filepath.Join(user.HomeDir, ".lrcli"), 0755)
-	fileName := filepath.Join(user.HomeDir, ".lrcli", "token.json")
+	fileName = filepath.Join(user.HomeDir, ".lrcli", "token.json")
 
 	dataBytes, _ := json.Marshal(cred)
 
 	return ioutil.WriteFile(fileName, dataBytes, 0644)
 
+}
+
+func getCreds() *LoginResponse {
+	var v2 LoginResponse
+	user, _ := user.Current()
+	fileName = filepath.Join(user.HomeDir, ".lrcli", "token.json")
+	_, err := os.Stat(fileName)
+	if os.IsNotExist(err) {
+		log.Println("Creating token.json")
+	}
+
+	file, _ := ioutil.ReadFile(fileName)
+	json.Unmarshal(file, &v2)
+	return &v2
 }
