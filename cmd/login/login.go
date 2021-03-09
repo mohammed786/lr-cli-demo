@@ -77,7 +77,8 @@ func validateLogin(opts *LoginOpts) error {
 		}
 		err = json.Unmarshal(resp, &v1)
 		if v1.AccessToken != "" {
-			return &cmdutil.FlagError{Err: errors.New("Already logged in ")}
+			log.Println("Login successfull")
+			//return &cmdutil.FlagError{Err: errors.New("Already logged in ")}
 		} else {
 			return doLogin(opts)
 		}
@@ -86,7 +87,6 @@ func validateLogin(opts *LoginOpts) error {
 }
 
 func doLogin(opts *LoginOpts) error {
-	log.Printf("%s", opts.Email)
 	conf := config.GetInstance()
 	hubPageURL := conf.LoginRadiusAPIDomain + "/identity/v2/auth/login/2FA?apiKey=" + conf.LoginRadiusAPIKey
 	body, _ := json.Marshal(opts)
