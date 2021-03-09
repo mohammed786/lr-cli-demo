@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"lr-cli/cmd/verify/resend"
 	"lr-cli/cmdutil"
 	"lr-cli/config"
 	"lr-cli/request"
@@ -41,6 +42,8 @@ func NewVerifyCmd() *cobra.Command {
 
 		},
 	}
+	resendCmd := resend.NewResendCmd()
+	cmd.AddCommand(resendCmd)
 
 	fl := cmd.Flags()
 	fl.StringVarP(&opts.Email, "email", "e", "", "Email Value")

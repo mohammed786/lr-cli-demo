@@ -17,6 +17,7 @@ package root
 
 import (
 	"fmt"
+	"lr-cli/cmd/get"
 	"lr-cli/cmd/login"
 	"lr-cli/cmd/verify"
 	"os"
@@ -48,6 +49,9 @@ func NewRootCmd() *cobra.Command {
 
 	verifyCmd := verify.NewVerifyCmd()
 	rootCmd.AddCommand((verifyCmd))
+
+	getCmd := get.NewGetCmd()
+	rootCmd.AddCommand((getCmd))
 
 	// Here you will define your flags and configuration settings.
 	// Cobra supports persistent flags, which, if defined here,
