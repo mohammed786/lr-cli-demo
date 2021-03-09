@@ -4,15 +4,15 @@ import (
 	"log"
 	"sync"
 
-	"github.com/caarlos0/env"
+	"github.com/spf13/viper"
 )
 
 // Config represents env vars required for app.
 // Incase no env is supplied, default values are used as fallback.
 type Config struct {
-	LoginRadiusAPIKey    string `env:"LoginRadiusAPIKey" envDefault:"ddff8a63-cbc3-4723-8415-b910c4d8770d"`
-	LoginRadiusAPIDomain string `env:"LoginRadiusAPIDomain" envDefault:"https://devapi.lrinternal.com"`
-	AdminConsoleAPIDomain string `env:"AdminConsoleAPIDomain" envDefault:"https://devadmin-console-api.lrinternal.com"`
+	LoginRadiusAPIKey     string `mapstructure:"LOGINRADIUS_API_KEY"`
+	LoginRadiusAPIDomain  string `mapstructure:"LOGINRADIUS_API_DOMAIN"`
+	AdminConsoleAPIDomain string `mapstructure:"ADMINCONSOLE_API_DOMAIN"`
 }
 
 // Singleton instance of config
@@ -23,9 +23,16 @@ var once sync.Once
 // Read and parse the configuration file
 func read() *Config {
 	config := Config{}
-	if err := env.Parse(&config); err != nil {
-		log.Fatal(err)
+	viper.AddConfigPath(".")
+	viper.SetConfigName("app")
+	viper.SetConfigType("env")
+	viper.AutomaticEnv()
+
+	err := viper.ReadInConfig()
+	if err != nil {
+		log.Fatal("Error", err)
 	}
+	err = viper.Unmarshal(&config)
 	return &config
 }
 

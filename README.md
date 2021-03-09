@@ -44,4 +44,13 @@ lr
     - reset-secret
 ```   
        
-       
+## Setup Enviroment File
+
+- Create `app.env` file in the root of the project.
+- Below is the list of required ENV vairables
+
+  ```
+  LOGINRADIUS_API_KEY
+  LOGINRADIUS_API_DOMAIN
+  ADMINCONSOLE_API_DOMAIN
+  ```

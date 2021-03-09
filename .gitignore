@@ -13,3 +13,6 @@
 vendor/
 .idea/
 tmp/
+
+# env
+*.env
