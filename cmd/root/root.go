@@ -19,6 +19,7 @@ import (
 	"fmt"
 	"lr-cli/cmd/get"
 	"lr-cli/cmd/login"
+	"lr-cli/cmd/logout"
 	"lr-cli/cmd/verify"
 	"os"
 
@@ -46,6 +47,9 @@ func NewRootCmd() *cobra.Command {
 	// Auth
 	loginCmd := login.NewLoginCmd()
 	rootCmd.AddCommand((loginCmd))
+
+	logoutCmd := logout.NewLogoutCmd()
+	rootCmd.AddCommand((logoutCmd))
 
 	verifyCmd := verify.NewVerifyCmd()
 	rootCmd.AddCommand((verifyCmd))
