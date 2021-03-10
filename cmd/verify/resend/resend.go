@@ -15,7 +15,7 @@ type ResendOpts struct {
 	Email string `json:"Email"`
 }
 
-type Resend struct { //for response
+type ResendResponse struct { //for response
 	IsPosted bool `json:IsPosted`
 }
 
@@ -46,7 +46,7 @@ func resend(opts *ResendOpts) error {
 		body, _ := json.Marshal(map[string]string{
 			"Email": opts.Email,
 		})
-		var resendResp Resend
+		var resendResp ResendResponse
 		resp, err := request.Rest(http.MethodPut, url, nil, string(body))
 		err = json.Unmarshal(resp, &resendResp)
 		if err != nil {

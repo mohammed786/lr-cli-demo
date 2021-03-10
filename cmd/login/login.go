@@ -59,8 +59,11 @@ func NewLoginCmd() *cobra.Command {
 }
 
 func validateLogin(opts *LoginOpts) error {
-	var v1 Token     //access
-	v2 := getCreds() //x
+	var v1 Token          //access
+	v2, err := getCreds() //x
+	if err != nil {
+		log.Println("Creating a token.json")
+	}
 	if v2.XSign != "" && v2.XToken != "" {
 		conf := config.GetInstance()
 		validateURL := conf.AdminConsoleAPIDomain + "/auth/validatetoken"
@@ -77,8 +80,8 @@ func validateLogin(opts *LoginOpts) error {
 		}
 		err = json.Unmarshal(resp, &v1)
 		if v1.AccessToken != "" {
-			log.Println("Login successfull")
-			//return &cmdutil.FlagError{Err: errors.New("Already logged in ")}
+			log.Println("Login already successfull")
+			return nil
 		} else {
 			return doLogin(opts)
 		}
@@ -138,16 +141,16 @@ func storeCreds(cred *LoginResponse) error {
 
 }
 
-func getCreds() *LoginResponse {
+func getCreds() (*LoginResponse, error) {
 	var v2 LoginResponse
 	user, _ := user.Current()
 	fileName = filepath.Join(user.HomeDir, ".lrcli", "token.json")
 	_, err := os.Stat(fileName)
 	if os.IsNotExist(err) {
-		log.Println("Creating token.json")
+		return (&v2), (err)
 	}
 
 	file, _ := ioutil.ReadFile(fileName)
 	json.Unmarshal(file, &v2)
-	return &v2
+	return (&v2), (err)
 }
