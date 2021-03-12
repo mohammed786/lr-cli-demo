@@ -140,7 +140,6 @@ func storeCreds(cred *LoginResponse) error {
 	return ioutil.WriteFile(fileName, dataBytes, 0644)
 
 }
-
 func getCreds() (*LoginResponse, error) {
 	var v2 LoginResponse
 	user, _ := user.Current()

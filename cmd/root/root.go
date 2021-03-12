@@ -3,6 +3,7 @@ package root
 import (
 	"lr-cli/cmd/get"
 	"lr-cli/cmd/login"
+	"lr-cli/cmd/logout"
 	"lr-cli/cmd/verify"
 
 	"github.com/spf13/cobra"
@@ -21,6 +22,9 @@ func NewRootCmd() *cobra.Command {
 	// Authentication Commands
 	loginCmd := login.NewLoginCmd()
 	rootCmd.AddCommand((loginCmd))
+
+	logoutCmd := logout.NewLogoutCmd()
+	rootCmd.AddCommand((logoutCmd))
 
 	verifyCmd := verify.NewVerifyCmd()
 	rootCmd.AddCommand((verifyCmd))
