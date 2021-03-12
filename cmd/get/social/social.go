@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
-	"lr-cli/cmd/get/social"
+
 	"lr-cli/config"
 	"lr-cli/request"
 	"net/http"
@@ -60,8 +60,6 @@ func NewsocialCmd() *cobra.Command {
 
 		},
 	}
-	socialCmd := social.NewsocialCmd()
-	cmd.AddCommand(socialCmd)
 
 	return cmd
 }

@@ -17,7 +17,6 @@ func NewGetCmd() *cobra.Command {
 
 	themeCmd := theme.NewThemeCmd()
 	cmd.AddCommand(themeCmd)
-	return cmd
 
 	socialCmd := social.NewsocialCmd()
 	cmd.AddCommand(socialCmd)
