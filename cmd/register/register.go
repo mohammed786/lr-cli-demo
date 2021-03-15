@@ -7,13 +7,6 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var appName, url string
-var err error
-
-type app struct {
-	IsSiteRegistered bool `json: IsSiteRegistered `
-}
-
 func NewRegisterCmd() *cobra.Command {
 
 	cmd := &cobra.Command{
