@@ -2,8 +2,11 @@ package get
 
 import (
 	"github.com/loginradius/lr-cli/cmd/get/config"
+	"github.com/loginradius/lr-cli/cmd/get/domain"
+	"github.com/loginradius/lr-cli/cmd/get/email"
 	"github.com/loginradius/lr-cli/cmd/get/social"
 	"github.com/loginradius/lr-cli/cmd/get/theme"
+
 	"github.com/spf13/cobra"
 )
 
@@ -17,6 +20,12 @@ func NewGetCmd() *cobra.Command {
 
 	themeCmd := theme.NewThemeCmd()
 	cmd.AddCommand(themeCmd)
+
+	domainCmd := domain.NewdomainCmd()
+	cmd.AddCommand(domainCmd)
+
+	emailCmd := email.NewemailCmd()
+	cmd.AddCommand(emailCmd)
 
 	socialCmd := social.NewsocialCmd()
 	cmd.AddCommand(socialCmd)
