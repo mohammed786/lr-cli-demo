@@ -6,6 +6,8 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/MakeNowJust/heredoc"
+
 	"github.com/loginradius/lr-cli/cmdutil"
 	"github.com/loginradius/lr-cli/config"
 	"github.com/loginradius/lr-cli/request"
@@ -23,7 +25,12 @@ func NewLoginCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "login",
 		Short: "Login to LR account",
-		Long:  `This commmand logs user into the LR account`,
+		Long: heredoc.Doc(`
+			This commmand logs user into the LR account.
+		`),
+		Example: heredoc.Doc(`
+			$ lr login -e <email> -p <password>
+		`),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			if opts.Email == "" {
 				return &cmdutil.FlagError{Err: errors.New("`--email` is require argument")}
