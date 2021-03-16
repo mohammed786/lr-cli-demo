@@ -4,12 +4,12 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"lr-cli/cmd/verify/resend"
-	"lr-cli/cmdutil"
-	"lr-cli/config"
-	"lr-cli/request"
 	"net/http"
 
+	"github.com/loginradius/lr-cli/cmd/verify/resend"
+	"github.com/loginradius/lr-cli/cmdutil"
+	"github.com/loginradius/lr-cli/config"
+	"github.com/loginradius/lr-cli/request"
 	"github.com/spf13/cobra"
 )
 

@@ -1,12 +1,11 @@
 package root
 
 import (
-	"lr-cli/cmd/get"
-	"lr-cli/cmd/login"
-	"lr-cli/cmd/logout"
-	"lr-cli/cmd/register"
-	"lr-cli/cmd/verify"
-
+	"github.com/loginradius/lr-cli/cmd/get"
+	"github.com/loginradius/lr-cli/cmd/login"
+	"github.com/loginradius/lr-cli/cmd/logout"
+	"github.com/loginradius/lr-cli/cmd/register"
+	"github.com/loginradius/lr-cli/cmd/verify"
 	"github.com/spf13/cobra"
 )
 

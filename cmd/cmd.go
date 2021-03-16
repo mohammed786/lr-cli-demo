@@ -2,8 +2,9 @@ package cmd
 
 import (
 	"fmt"
-	"lr-cli/cmd/root"
 	"os"
+
+	"github.com/loginradius/lr-cli/cmd/root"
 )
 
 // Execute adds all child commands to the root command and sets flags appropriately.
