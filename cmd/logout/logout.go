@@ -2,11 +2,11 @@ package logout
 
 import (
 	"errors"
-	"lr-cli/cmdutil"
 	"os"
 	"os/user"
 	"path/filepath"
 
+	"github.com/loginradius/lr-cli/cmdutil"
 	"github.com/spf13/cobra"
 )
 

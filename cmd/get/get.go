@@ -1,9 +1,8 @@
 package get
 
 import (
-	"lr-cli/cmd/get/social"
-	"lr-cli/cmd/get/theme"
-
+	"github.com/loginradius/lr-cli/cmd/get/social"
+	"github.com/loginradius/lr-cli/cmd/get/theme"
 	"github.com/spf13/cobra"
 )
 

@@ -3,16 +3,12 @@ package login
 import (
 	"encoding/json"
 	"errors"
-	"io/ioutil"
 	"log"
-	"lr-cli/cmdutil"
-	"lr-cli/config"
-	"lr-cli/request"
 	"net/http"
-	"os"
-	"os/user"
-	"path/filepath"
 
+	"github.com/loginradius/lr-cli/cmdutil"
+	"github.com/loginradius/lr-cli/config"
+	"github.com/loginradius/lr-cli/request"
 	"github.com/spf13/cobra"
 )
 
@@ -20,18 +16,6 @@ type LoginOpts struct {
 	Email    string `json:"Email"`
 	Password string `json:"Password"`
 }
-
-type Token struct {
-	AccessToken string `json:"access_token"`
-}
-
-type LoginResponse struct {
-	XSign   string `json:"xsign"`
-	XToken  string `json:"xtoken"`
-	AppName string `json:"app_name"`
-}
-
-var fileName string
 
 func NewLoginCmd() *cobra.Command {
 
@@ -47,8 +31,15 @@ func NewLoginCmd() *cobra.Command {
 			if opts.Password == "" {
 				return &cmdutil.FlagError{Err: errors.New("`--password` is require argument")}
 			}
-			return validateLogin(opts)
+			isValid, err := validateLogin()
 
+			if err != nil {
+				return err
+			} else if isValid {
+				log.Printf("%s", "You are already been logged in")
+				return nil
+			}
+			return doLogin(opts)
 		},
 	}
 	fl := cmd.Flags()
@@ -56,37 +47,6 @@ func NewLoginCmd() *cobra.Command {
 	fl.StringVarP(&opts.Password, "password", "p", "", "Password value")
 
 	return cmd
-}
-
-func validateLogin(opts *LoginOpts) error {
-	var v1 Token          //access
-	v2, err := getCreds() //x
-	if err != nil {
-		log.Println("Creating a token.json")
-	}
-	if v2.XSign != "" && v2.XToken != "" {
-		conf := config.GetInstance()
-		validateURL := conf.AdminConsoleAPIDomain + "/auth/validatetoken"
-		headersV := map[string]string{
-			"Origin":                  "https://dev-dashboard.lrinternal.com",
-			"x-is-loginradius--sign":  v2.XSign,
-			"x-is-loginradius--token": v2.XToken,
-			"x-is-loginradius-ajax":   "true",
-		}
-
-		resp, err := request.Rest(http.MethodGet, validateURL, headersV, "")
-		if err != nil {
-			return err
-		}
-		err = json.Unmarshal(resp, &v1)
-		if v1.AccessToken != "" {
-			log.Println("Login already successfull")
-			return nil
-		} else {
-			return doLogin(opts)
-		}
-	}
-	return doLogin(opts)
 }
 
 func doLogin(opts *LoginOpts) error {
@@ -99,7 +59,7 @@ func doLogin(opts *LoginOpts) error {
 	}
 
 	// Identity API
-	var identityResp Token
+	var identityResp cmdutil.Token
 	err = json.Unmarshal(resp, &identityResp)
 	if err != nil {
 		return err
@@ -110,46 +70,33 @@ func doLogin(opts *LoginOpts) error {
 	}
 
 	// Admin Console Backend API
-	var resObj LoginResponse
+	var resObj cmdutil.LoginResponse
 
 	backendURL := conf.AdminConsoleAPIDomain + "/auth/login"
 	body, _ = json.Marshal(map[string]string{
 		"accesstoken": identityResp.AccessToken,
 	})
-	headers := map[string]string{
-		"Origin":                "https://dev-dashboard.lrinternal.com",
-		"x-is-loginradius-ajax": "true",
-	}
-	resp, err = request.Rest(http.MethodPost, backendURL, headers, string(body))
+	resp, err = request.Rest(http.MethodPost, backendURL, nil, string(body))
 
 	err = json.Unmarshal(resp, &resObj)
 	if err != nil {
 		return err
 	}
-	return storeCreds(&resObj)
+	log.Println("Successfully Logged In")
+	return cmdutil.StoreCreds(&resObj)
 }
 
-func storeCreds(cred *LoginResponse) error {
-	user, _ := user.Current()
-
-	os.Mkdir(filepath.Join(user.HomeDir, ".lrcli"), 0755)
-	fileName = filepath.Join(user.HomeDir, ".lrcli", "token.json")
-
-	dataBytes, _ := json.Marshal(cred)
-
-	return ioutil.WriteFile(fileName, dataBytes, 0644)
-
-}
-func getCreds() (*LoginResponse, error) {
-	var v2 LoginResponse
-	user, _ := user.Current()
-	fileName = filepath.Join(user.HomeDir, ".lrcli", "token.json")
-	_, err := os.Stat(fileName)
-	if os.IsNotExist(err) {
-		return (&v2), (err)
+func validateLogin() (bool, error) {
+	conf := config.GetInstance()
+	validateURL := conf.AdminConsoleAPIDomain + "/auth/validatetoken"
+	resp, err := request.Rest(http.MethodGet, validateURL, nil, "")
+	if err != nil {
+		return false, err
 	}
-
-	file, _ := ioutil.ReadFile(fileName)
-	json.Unmarshal(file, &v2)
-	return (&v2), (err)
+	var v1 cmdutil.Token
+	err = json.Unmarshal(resp, &v1)
+	if v1.AccessToken != "" {
+		return true, nil
+	}
+	return false, nil
 }
