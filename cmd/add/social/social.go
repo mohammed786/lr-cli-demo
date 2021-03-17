@@ -53,7 +53,7 @@ func NewsocialCmd() *cobra.Command {
 	opts := &Provider{}
 
 	cmd := &cobra.Command{
-		Use:   "add",
+		Use:   "social",
 		Short: "add social provider",
 		Long:  `This commmand adds social provider`,
 		RunE: func(cmd *cobra.Command, args []string) error {
