@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/MakeNowJust/heredoc"
 	"github.com/loginradius/lr-cli/cmdutil"
 	"github.com/loginradius/lr-cli/config"
 	"github.com/loginradius/lr-cli/request"
@@ -15,7 +16,12 @@ func NewConfigCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "config",
 		Short: "Shows/Stores App's API Key/Secret",
-		Long:  `This command displays and stores the User App's API Key/Secret`,
+		Long: heredoc.Doc(`
+			This command displays and stores the User App's API Key/Secret
+		`),
+		Example: heredoc.Doc(`
+			$ lr get config
+		`),
 		Run: func(cmd *cobra.Command, args []string) {
 			configure()
 		},

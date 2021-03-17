@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/MakeNowJust/heredoc"
 	"github.com/loginradius/lr-cli/cmdutil"
 	"github.com/loginradius/lr-cli/config"
 	"github.com/loginradius/lr-cli/request"
@@ -24,7 +25,12 @@ func NewResetCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "reset-secret",
 		Short: "Resets the User App's API secret",
-		Long:  `This commmand resets the User App's API secret`,
+		Long: heredoc.Doc(`
+			This commmand resets the User App's API secret
+		`),
+		Example: heredoc.Doc(`
+			$ lr reset-secret
+		`),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			return reset()
 		},
@@ -51,11 +57,11 @@ func reset() error {
 			return err
 		}
 		update()
-		log.Println("API Secret reset successfull")
+		log.Println("API Secret reset successfully")
 
 	} else {
 		update()
-		log.Println("API Secret reset successfull")
+		log.Println("API Secret reset successfully")
 	}
 
 	return nil
