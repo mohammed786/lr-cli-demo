@@ -2,6 +2,34 @@
 
 This is the LoginRadius CLI project
 
+## How to Build from Source
+
+### Installation from source
+
+0. Verify that you have Go 1.13+ installed
+
+   ```sh
+   $ go version
+   ```
+
+   If `go` is not installed, follow instructions on [the Go website](https://golang.org/doc/install).
+
+1. Clone this repository
+
+   ```sh
+   $ git clone https://github.com/LoginRadius/lr-cli.git
+   $ cd lr-cli
+   ```
+
+2. Build and install
+
+   #### Unix-like systems
+   ```sh
+   # installs to '/usr/local' by default; sudo may be required
+   $ make install
+   
+   ```
+
 ## List of Commands supported in Beta
 
 ```
@@ -43,14 +71,3 @@ lr
     - set-password
     - reset-secret
 ```   
-       
-## Setup Enviroment File
-
-- Create `app.env` file in the root of the project.
-- Below is the list of required ENV vairables
-
-  ```
-  LOGINRADIUS_API_KEY
-  LOGINRADIUS_API_DOMAIN
-  ADMINCONSOLE_API_DOMAIN
-  ```
