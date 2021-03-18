@@ -1,6 +1,7 @@
 package get
 
 import (
+	"github.com/loginradius/lr-cli/cmd/get/config"
 	"github.com/loginradius/lr-cli/cmd/get/social"
 	"github.com/loginradius/lr-cli/cmd/get/theme"
 	"github.com/spf13/cobra"
@@ -19,5 +20,8 @@ func NewGetCmd() *cobra.Command {
 
 	socialCmd := social.NewsocialCmd()
 	cmd.AddCommand(socialCmd)
+
+	configCmd := config.NewConfigCmd()
+	cmd.AddCommand(configCmd)
 	return cmd
 }
