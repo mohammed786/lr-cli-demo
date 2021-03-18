@@ -5,7 +5,7 @@ import (
 	"github.com/loginradius/lr-cli/cmd/login"
 	"github.com/loginradius/lr-cli/cmd/logout"
 	"github.com/loginradius/lr-cli/cmd/register"
-	"github.com/loginradius/lr-cli/cmd/reset"
+	"github.com/loginradius/lr-cli/cmd/resetSecret"
 	"github.com/loginradius/lr-cli/cmd/verify"
 	"github.com/spf13/cobra"
 )
@@ -36,7 +36,7 @@ func NewRootCmd() *cobra.Command {
 	getCmd := get.NewGetCmd()
 	rootCmd.AddCommand((getCmd))
 
-	resetCmd := reset.NewResetCmd()
+	resetCmd := resetSecret.NewResetCmd()
 	rootCmd.AddCommand((resetCmd))
 
 	// Here you will define your flags and configuration settings.

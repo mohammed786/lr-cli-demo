@@ -1,4 +1,4 @@
-package reset
+package resetSecret
 
 import (
 	"encoding/json"
@@ -56,13 +56,13 @@ func reset() error {
 		if err != nil {
 			return err
 		}
-		update()
-		log.Println("API Secret reset successfully")
-
-	} else {
-		update()
-		log.Println("API Secret reset successfully")
 	}
+
+	err = update()
+	if err != nil {
+		return err
+	}
+	log.Println("API Secret reset successfully")
 
 	return nil
 }

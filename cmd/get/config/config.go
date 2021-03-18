@@ -21,9 +21,12 @@ func NewConfigCmd() *cobra.Command {
 		`),
 		Example: heredoc.Doc(`
 			$ lr get config
+			API Key: <Your API Key>
+			API Secret: <Your API secret >
+	
 		`),
-		Run: func(cmd *cobra.Command, args []string) {
-			configure()
+		RunE: func(cmd *cobra.Command, args []string) error {
+			return configure()
 		},
 	}
 	return cmd
