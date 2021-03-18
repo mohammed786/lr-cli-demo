@@ -14,11 +14,6 @@ import (
 	"github.com/spf13/cobra"
 )
 
-type LoginResponse struct {
-	XSign  string `json:"xsign"`
-	XToken string `json:"xtoken"`
-}
-
 var fileName string
 
 type domain struct {
