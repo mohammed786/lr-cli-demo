@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/loginradius/lr-cli/cmd/add/social"
 	"github.com/loginradius/lr-cli/cmdutil"
 	"github.com/loginradius/lr-cli/config"
 	"github.com/loginradius/lr-cli/request"
@@ -17,7 +16,7 @@ import (
 var fileName string
 
 type provider struct {
-	Provider string `json:"provider"`
+	providerName string `json:"providerName"`
 }
 
 type Result struct {
@@ -35,18 +34,16 @@ func NewsocialCmd() *cobra.Command {
 		Long:    `This commmand deletes social provider`,
 		Example: `$ lr delete social --provider <provider>`,
 		RunE: func(cmd *cobra.Command, args []string) error {
-			if opts.Provider == "" {
+			if opts.providerName == "" {
 				return &cmdutil.FlagError{Err: errors.New("`provider` is require argument")}
 			}
 			return delete(opts)
 
 		},
 	}
-	socialCmd := social.NewsocialCmd()
-	cmd.AddCommand(socialCmd)
 
 	fl := cmd.Flags()
-	fl.StringVarP(&opts.Provider, "provider", "p", "", "provider name")
+	fl.StringVarP(&opts.providerName, "provider", "p", "", "provider name")
 
 	return cmd
 }
@@ -54,10 +51,10 @@ func NewsocialCmd() *cobra.Command {
 func delete(opts *provider) error {
 	conf := config.GetInstance()
 
-	url = conf.LoginRadiusAPIDomain + "/platform-configuration/social-provider-config-remove?"
+	url = conf.AdminConsoleAPIDomain + "/platform-configuration/social-provider-config-remove?"
 
 	var resultResp Result
-	resp, err := request.Rest(http.MethodDelete, url, nil, opts.Provider)
+	resp, err := request.Rest(http.MethodDelete, url, nil, opts.providerName)
 	err = json.Unmarshal(resp, &resultResp)
 	if err != nil {
 		return err

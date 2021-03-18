@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"strings"
 
 	"github.com/loginradius/lr-cli/request"
 
@@ -16,11 +17,13 @@ import (
 
 var fileName string
 
+type domainManagement struct {
+	CallbackUrl string `json:"CallbackUrl"`
+}
+
 type domain struct {
 	// CallbackUrl string `json:"CallbackUrl"`
-	Domain     string `json:"http://localhost"`
-	Production string `json:"production"`
-	staging    string `json:""`
+	Domain string `json:"domain"`
 }
 
 type Result struct {
@@ -34,27 +37,67 @@ func NewdomainCmd() *cobra.Command {
 		Use:     "domain",
 		Short:   "add doamin",
 		Long:    `This commmand adds domain`,
-		Example: `$ lr add domain --production <production>`,
+		Example: `$ lr add domain --domain <domain>`,
 		RunE: func(cmd *cobra.Command, args []string) error {
-			if opts.Production == "" {
-				return &cmdutil.FlagError{Err: errors.New("`production` is require argument")}
+			if opts.Domain == "" {
+				return &cmdutil.FlagError{Err: errors.New("`domain` is require argument")}
 			}
-			return add(opts)
+
+			var p, _ = get()
+			fmt.Printf(p.CallbackUrl)
+			s := strings.Split(p.CallbackUrl, ";")
+			if len(s) < 3 {
+				domain := p.CallbackUrl + ";" + opts.Domain
+
+				return add(domain)
+			} else {
+				return &cmdutil.FlagError{Err: errors.New("more than 3 domains cannot be added in free plan")}
+			}
 
 		},
 	}
+
 	fl := cmd.Flags()
-	fl.StringVarP(&opts.Production, "production", "p", "", "production name")
+	fl.StringVarP(&opts.Domain, "domain", "d", "", "domain name")
 
 	return cmd
 }
 
-func add(opts *domain) error {
+func get() (*domainManagement, error) {
+	conf := config.GetInstance()
 	var url string
-	body, _ := json.Marshal(opts)
+	url = conf.AdminConsoleAPIDomain + "/deployment/sites?"
+
+	var resultResp *domainManagement
+	resp, err := request.Rest(http.MethodGet, url, nil, "")
+	err = json.Unmarshal(resp, &resultResp)
+	if err != nil {
+		return nil, err
+	}
+
+	//append domain with resultResp
+	//fmt.Print(resultResp.CallbackUrl)
+	return resultResp, nil
+}
+
+func add(domain string) error {
+	var url string
+	fmt.Printf("domain=%s", domain)
+	body, _ := json.Marshal(map[string]string{
+		"domain":     "http://localhost",
+		"production": domain,
+		"staging":    "",
+	})
 	conf := config.GetInstance()
 
-	url = conf.LoginRadiusAPIDomain + "deployment/sites?"
+	url = conf.AdminConsoleAPIDomain + "/deployment/sites?"
+
+	// var resultResp2 domainManagement
+	// resp, err2 := request.Rest(http.MethodGet, url, nil, "")
+	// err2 = json.Unmarshal(resp, &resultResp2)
+	// if err2 != nil {
+	// 	return err2
+	// }
 
 	var resultResp Result
 	resp, err := request.Rest(http.MethodPost, url, nil, string(body))

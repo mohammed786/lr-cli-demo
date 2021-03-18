@@ -38,10 +38,11 @@ func NewdomainCmd() *cobra.Command {
 func get() error {
 	conf := config.GetInstance()
 
-	url = conf.LoginRadiusAPIDomain + "/deployment/sites?"
+	url = conf.AdminConsoleAPIDomain + "/deployment/sites?"
 
 	var resultResp domainManagement
 	resp, err := request.Rest(http.MethodGet, url, nil, "")
+	//fmt.Printf("%s", string(resp))
 	err = json.Unmarshal(resp, &resultResp)
 	if err != nil {
 		return err

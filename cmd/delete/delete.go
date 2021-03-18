@@ -1,7 +1,7 @@
 package delete
 
 import (
-	"lr-cli/cmd/delete/social"
+	"github.com/loginradius/lr-cli/cmd/delete/social"
 
 	"github.com/spf13/cobra"
 )

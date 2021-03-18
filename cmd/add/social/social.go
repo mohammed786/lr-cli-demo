@@ -55,9 +55,9 @@ func NewsocialCmd() *cobra.Command {
 func add(opts *Provider) error {
 	conf := config.GetInstance()
 
-	url1 = conf.LoginRadiusAPIDomain + "/platform-configuration/social-providers/status?"
+	url1 = conf.AdminConsoleAPIDomain + "/platform-configuration/social-providers/status?"
 
-	url2 = conf.LoginRadiusAPIDomain + "/platform-configuration/social-provider/options?"
+	url2 = conf.AdminConsoleAPIDomain + "/platform-configuration/social-provider/options?"
 
 	var resultResp Result
 	resp1, err := request.Rest(http.MethodPost, url1, nil, opts.Provider)

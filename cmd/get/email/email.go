@@ -14,9 +14,9 @@ import (
 var fileName string
 
 type email struct {
-	Description string `json:"description"`
-	ErrorCode   string `json:"errorCode"`
-	Message     string `json:"message"`
+	EmailLinkExpire            int `json:"EmailLinkExpire"`
+	EmailNotificationCount     int `json:"EmailNotificationCount"`
+	EmailNotificationFrequency int `json:"EmailNotificationFrequency"`
 }
 
 var url string
@@ -41,7 +41,7 @@ func NewemailCmd() *cobra.Command {
 func get() error {
 	conf := config.GetInstance()
 
-	url = conf.LoginRadiusAPIDomain + "/platform-configuration/global-email-configuration?"
+	url = conf.AdminConsoleAPIDomain + "/platform-configuration/global-email-configuration?"
 
 	var resultResp email
 	resp, err := request.Rest(http.MethodGet, url, nil, "")
@@ -49,6 +49,8 @@ func get() error {
 	if err != nil {
 		return err
 	}
+	//fmt.Printf("%s", string(resp))
+	fmt.Printf("{EmailLinkExpire, EmailNotificationCount, EmailNotificationFrequency}\n")
 	fmt.Println(resultResp)
 	return nil
 }

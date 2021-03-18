@@ -45,11 +45,11 @@ func NewsocialCmd() *cobra.Command {
 func get() error {
 	conf := config.GetInstance()
 
-	url = conf.LoginRadiusAPIDomain + "/platform-configuration/social-provider/list?"
+	url = conf.AdminConsoleAPIDomain + "/platform-configuration/social-provider/list?"
 
 	var resultResp socialProviderList
 	resp, err := request.Rest(http.MethodGet, url, nil, "")
-	err = json.Unmarshal(resp, &resultResp)
+	err = json.Unmarshal([]byte(resp), &resultResp)
 	if err != nil {
 		return err
 	}

@@ -1,9 +1,8 @@
 package add
 
 import (
-	"lr-cli/cmd/add/domain"
-	"lr-cli/cmd/add/social"
-
+	"github.com/loginradius/lr-cli/cmd/add/domain"
+	"github.com/loginradius/lr-cli/cmd/add/social"
 	"github.com/spf13/cobra"
 )
 
