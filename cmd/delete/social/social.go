@@ -4,15 +4,12 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"io/ioutil"
-	"lr-cli/cmd/add/social"
-	"lr-cli/cmdutil"
-	"lr-cli/config"
-	"lr-cli/request"
 	"net/http"
-	"os"
-	"os/user"
-	"path/filepath"
+
+	"github.com/loginradius/lr-cli/cmd/add/social"
+	"github.com/loginradius/lr-cli/cmdutil"
+	"github.com/loginradius/lr-cli/config"
+	"github.com/loginradius/lr-cli/request"
 
 	"github.com/spf13/cobra"
 )
@@ -34,27 +31,14 @@ type Result struct {
 
 var url string
 
-func getCreds() (*LoginResponse, error) {
-	var v2 LoginResponse
-	user, _ := user.Current()
-	fileName = filepath.Join(user.HomeDir, ".lrcli", "token.json")
-	_, err := os.Stat(fileName)
-	if os.IsNotExist(err) {
-		return (&v2), (err)
-	}
-
-	file, _ := ioutil.ReadFile(fileName)
-	json.Unmarshal(file, &v2)
-	return (&v2), (err)
-}
-
 func NewsocialCmd() *cobra.Command {
 	opts := &provider{}
 
 	cmd := &cobra.Command{
-		Use:   "social",
-		Short: "delete social provider",
-		Long:  `This commmand deletes social provider`,
+		Use:     "social",
+		Short:   "delete social provider",
+		Long:    `This commmand deletes social provider`,
+		Example: `$ lr delete social --provider <provider>`,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			if opts.Provider == "" {
 				return &cmdutil.FlagError{Err: errors.New("`provider` is require argument")}
@@ -74,21 +58,11 @@ func NewsocialCmd() *cobra.Command {
 
 func delete(opts *provider) error {
 	conf := config.GetInstance()
-	if opts.Provider != "" {
-		url = conf.LoginRadiusAPIDomain + "/platform-configuration/social-provider-config-remove?"
-	} else {
-		fmt.Println("Use paramters correctly")
-	}
-	v2, err := getCreds()
-	headersV := map[string]string{
-		"Origin":                  "https://dev-dashboard.lrinternal.com",
-		"x-is-loginradius--sign":  v2.XSign,
-		"x-is-loginradius--token": v2.XToken,
-		"x-is-loginradius-ajax":   "true",
-	}
+
+	url = conf.LoginRadiusAPIDomain + "/platform-configuration/social-provider-config-remove?"
 
 	var resultResp Result
-	resp, err := request.Rest(http.MethodDelete, url, headersV, opts.Provider)
+	resp, err := request.Rest(http.MethodDelete, url, nil, opts.Provider)
 	err = json.Unmarshal(resp, &resultResp)
 	if err != nil {
 		return err

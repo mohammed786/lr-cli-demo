@@ -4,14 +4,12 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"io/ioutil"
-	"lr-cli/cmdutil"
-	"lr-cli/config"
-	"lr-cli/request"
 	"net/http"
-	"os"
-	"os/user"
-	"path/filepath"
+
+	"github.com/loginradius/lr-cli/request"
+
+	"github.com/loginradius/lr-cli/cmdutil"
+	"github.com/loginradius/lr-cli/config"
 
 	"github.com/spf13/cobra"
 )
@@ -34,29 +32,14 @@ type Result struct {
 	CallbackUrl string `json:"CallbackUrl"`
 }
 
-var url string
-
-func getCreds() (*LoginResponse, error) {
-	var v2 LoginResponse
-	user, _ := user.Current()
-	fileName = filepath.Join(user.HomeDir, ".lrcli", "token.json")
-	_, err := os.Stat(fileName)
-	if os.IsNotExist(err) {
-		return (&v2), (err)
-	}
-
-	file, _ := ioutil.ReadFile(fileName)
-	json.Unmarshal(file, &v2)
-	return (&v2), (err)
-}
-
 func NewdomainCmd() *cobra.Command {
 	opts := &domain{}
 
 	cmd := &cobra.Command{
-		Use:   "domain",
-		Short: "add doamin",
-		Long:  `This commmand adds domain`,
+		Use:     "domain",
+		Short:   "add doamin",
+		Long:    `This commmand adds domain`,
+		Example: `$ lr add domain --production <production>`,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			if opts.Production == "" {
 				return &cmdutil.FlagError{Err: errors.New("`production` is require argument")}
@@ -72,23 +55,14 @@ func NewdomainCmd() *cobra.Command {
 }
 
 func add(opts *domain) error {
+	var url string
 	body, _ := json.Marshal(opts)
 	conf := config.GetInstance()
-	if opts.Production != "" {
-		url = conf.LoginRadiusAPIDomain + "deployment/sites?"
-	} else {
-		fmt.Println("Use paramters correctly")
-	}
-	v2, err := getCreds()
-	headersV := map[string]string{
-		"Origin":                  "https://dev-dashboard.lrinternal.com",
-		"x-is-loginradius--sign":  v2.XSign,
-		"x-is-loginradius--token": v2.XToken,
-		"x-is-loginradius-ajax":   "true",
-	}
+
+	url = conf.LoginRadiusAPIDomain + "deployment/sites?"
 
 	var resultResp Result
-	resp, err := request.Rest(http.MethodPost, url, headersV, string(body))
+	resp, err := request.Rest(http.MethodPost, url, nil, string(body))
 	err = json.Unmarshal(resp, &resultResp)
 	if err != nil {
 		return err

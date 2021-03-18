@@ -28,9 +28,10 @@ var url string
 func NewsocialCmd() *cobra.Command {
 
 	cmd := &cobra.Command{
-		Use:   "social",
-		Short: "get social providers",
-		Long:  `This commmand lists social providers`,
+		Use:     "social",
+		Short:   "get social providers",
+		Long:    `This commmand lists social providers`,
+		Example: `$ lr get social`,
 		RunE: func(cmd *cobra.Command, args []string) error {
 
 			return get()
