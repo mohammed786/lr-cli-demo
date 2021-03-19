@@ -2,6 +2,8 @@ package delete
 
 import (
 	"github.com/loginradius/lr-cli/cmd/delete/domain"
+	"github.com/loginradius/lr-cli/cmd/delete/social"
+
 	"github.com/spf13/cobra"
 )
 
@@ -16,5 +18,7 @@ func NewdeleteCmd() *cobra.Command {
 	domainCmd := domain.NewdomainCmd()
 	cmd.AddCommand((domainCmd))
 
+	socialCmd := social.NewsocialCmd()
+	cmd.AddCommand(socialCmd)
 	return cmd
 }

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/MakeNowJust/heredoc"
 	"github.com/loginradius/lr-cli/config"
 	"github.com/loginradius/lr-cli/request"
 	"github.com/spf13/cobra"
@@ -24,7 +25,7 @@ func NewdomainCmd() *cobra.Command {
 		Use:     "domain",
 		Short:   "get domains added",
 		Long:    `This commmand lists domains added`,
-		Example: `$ lr get domain`,
+		Example: heredoc.Doc(`$ lr get domain`),
 		RunE: func(cmd *cobra.Command, args []string) error {
 
 			return get()
@@ -42,7 +43,6 @@ func get() error {
 
 	var resultResp domainManagement
 	resp, err := request.Rest(http.MethodGet, url, nil, "")
-	//fmt.Printf("%s", string(resp))
 	err = json.Unmarshal(resp, &resultResp)
 	if err != nil {
 		return err

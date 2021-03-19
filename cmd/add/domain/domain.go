@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/MakeNowJust/heredoc"
 	"github.com/loginradius/lr-cli/request"
 
 	"github.com/loginradius/lr-cli/cmdutil"
@@ -22,7 +23,6 @@ type domainManagement struct {
 }
 
 type domain struct {
-	// CallbackUrl string `json:"CallbackUrl"`
 	Domain string `json:"domain"`
 }
 
@@ -37,10 +37,10 @@ func NewdomainCmd() *cobra.Command {
 		Use:     "domain",
 		Short:   "add doamin",
 		Long:    `This commmand adds domain`,
-		Example: `$ lr add domain --domain <domain>`,
+		Example: heredoc.Doc(`$ lr add domain --domain <domain>`),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			if opts.Domain == "" {
-				return &cmdutil.FlagError{Err: errors.New("`domain` is require argument")}
+				return &cmdutil.FlagError{Err: errors.New("`domain` is required argument")}
 			}
 
 			var p, _ = get()
@@ -75,8 +75,6 @@ func get() (*domainManagement, error) {
 		return nil, err
 	}
 
-	//append domain with resultResp
-	//fmt.Print(resultResp.CallbackUrl)
 	return resultResp, nil
 }
 
@@ -91,13 +89,6 @@ func add(domain string) error {
 	conf := config.GetInstance()
 
 	url = conf.AdminConsoleAPIDomain + "/deployment/sites?"
-
-	// var resultResp2 domainManagement
-	// resp, err2 := request.Rest(http.MethodGet, url, nil, "")
-	// err2 = json.Unmarshal(resp, &resultResp2)
-	// if err2 != nil {
-	// 	return err2
-	// }
 
 	var resultResp Result
 	resp, err := request.Rest(http.MethodPost, url, nil, string(body))

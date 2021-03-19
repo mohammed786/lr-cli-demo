@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/MakeNowJust/heredoc"
 	"github.com/loginradius/lr-cli/config"
 	"github.com/loginradius/lr-cli/request"
 
@@ -27,7 +28,7 @@ func NewemailCmd() *cobra.Command {
 		Use:     "email",
 		Short:   "get email config",
 		Long:    `This commmand lists email config`,
-		Example: `$ lr get email`,
+		Example: heredoc.Doc(`$ lr get email`),
 		RunE: func(cmd *cobra.Command, args []string) error {
 
 			return get()
@@ -49,7 +50,6 @@ func get() error {
 	if err != nil {
 		return err
 	}
-	//fmt.Printf("%s", string(resp))
 	fmt.Printf("{EmailLinkExpire, EmailNotificationCount, EmailNotificationFrequency}\n")
 	fmt.Println(resultResp)
 	return nil

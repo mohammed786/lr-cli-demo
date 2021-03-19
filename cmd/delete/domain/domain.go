@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/MakeNowJust/heredoc"
 	"github.com/loginradius/lr-cli/request"
 
 	"github.com/loginradius/lr-cli/cmdutil"
@@ -37,25 +38,14 @@ func NewdomainCmd() *cobra.Command {
 		Use:     "domain",
 		Short:   "delete domain",
 		Long:    `This commmand deletes domain`,
-		Example: `$ lr delete domain --domain <domain>`,
+		Example: heredoc.Doc(`$ lr delete domain --domain <domain>`),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			if opts.Domain == "" {
-				return &cmdutil.FlagError{Err: errors.New("`domain` is require argument")}
+				return &cmdutil.FlagError{Err: errors.New("`domain` is required argument")}
 			}
 			var p, _ = get()
 			domain := strings.ReplaceAll(p.CallbackUrl, (";" + opts.Domain), "")
 			return delete(domain)
-
-			// var p, _ = get()
-			// fmt.Printf(p.CallbackUrl)
-			// s := strings.Split(p.CallbackUrl, ";")
-			// if len(s) < 3 {
-			// 	domain := p.CallbackUrl + ";" + opts.Domain
-
-			// 	return delete(domain)
-			// } else {
-			// 	return &cmdutil.FlagError{Err: errors.New("more than 3 domains cannot be added in free plan")}
-			// }
 
 		},
 	}
@@ -78,8 +68,6 @@ func get() (*domainManagement, error) {
 		return nil, err
 	}
 
-	//append domain with resultResp
-	//fmt.Print(resultResp.CallbackUrl)
 	return resultResp, nil
 }
 
@@ -94,13 +82,6 @@ func delete(domain string) error {
 	conf := config.GetInstance()
 
 	url = conf.AdminConsoleAPIDomain + "/deployment/sites?"
-
-	// var resultResp2 domainManagement
-	// resp, err2 := request.Rest(http.MethodGet, url, nil, "")
-	// err2 = json.Unmarshal(resp, &resultResp2)
-	// if err2 != nil {
-	// 	return err2
-	// }
 
 	var resultResp Result
 	resp, err := request.Rest(http.MethodPost, url, nil, string(body))

@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/MakeNowJust/heredoc"
 	"github.com/loginradius/lr-cli/cmdutil"
 	"github.com/loginradius/lr-cli/config"
 	"github.com/loginradius/lr-cli/request"
@@ -29,7 +30,7 @@ func NewemailCmd() *cobra.Command {
 		Use:     "email",
 		Short:   "set email config",
 		Long:    `This commmand sets email config`,
-		Example: `$ lr set email`,
+		Example: heredoc.Doc(`$ lr set email --email_link_expire <email_link_expire> --email_notif_count <email_notif_count> --email_notif_frequency <email_notif_frequency>`),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			var intpointer1 *int
 			intpointer1 = &opts.EmailLinkExpire
@@ -49,7 +50,6 @@ func NewemailCmd() *cobra.Command {
 			if intpointer3 == nil {
 				return &cmdutil.FlagError{Err: errors.New("`email_notif_frequency` is require argument")}
 			}
-			//fmt.Printf(string(rune(opts.EmailLinkExpire)))
 			return set(opts.EmailLinkExpire, opts.EmailNotificationCount, opts.EmailNotificationFrequency)
 
 		},
@@ -80,9 +80,7 @@ func set(a int, b int, c int) error {
 	if err != nil {
 		return err
 	}
-	//fmt.Printf("%s", string(resp))
 	fmt.Printf("{EmailLinkExpire, EmailNotificationCount, EmailNotificationFrequency}\n")
-	//fmt.Printf(string(resp))
 	fmt.Println(resultResp)
 	return nil
 }
