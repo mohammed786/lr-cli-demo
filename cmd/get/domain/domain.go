@@ -1,11 +1,11 @@
-package social
+package domain
 
 import (
 	"encoding/json"
 	"fmt"
-
 	"net/http"
 
+	"github.com/MakeNowJust/heredoc"
 	"github.com/loginradius/lr-cli/config"
 	"github.com/loginradius/lr-cli/request"
 	"github.com/spf13/cobra"
@@ -13,24 +13,19 @@ import (
 
 var fileName string
 
-type socialProvider struct {
-	Name    string `json:"name"`
-	Display string `json:"display"`
-	Mdfile  string `json:"mdfile"`
-}
-
-type socialProviderList struct {
-	Data []socialProvider `json:"data"`
+type domainManagement struct {
+	CallbackUrl string `json:"CallbackUrl"`
 }
 
 var url string
 
-func NewsocialCmd() *cobra.Command {
+func NewdomainCmd() *cobra.Command {
 
 	cmd := &cobra.Command{
-		Use:   "social",
-		Short: "get social providers",
-		Long:  `This commmand lists social providers`,
+		Use:     "domain",
+		Short:   "get domains added",
+		Long:    `This commmand lists domains added`,
+		Example: heredoc.Doc(`$ lr get domain`),
 		RunE: func(cmd *cobra.Command, args []string) error {
 
 			return get()
@@ -44,9 +39,9 @@ func NewsocialCmd() *cobra.Command {
 func get() error {
 	conf := config.GetInstance()
 
-	url = conf.LoginRadiusAPIDomain + "/platform-configuration/social-provider/list?"
+	url = conf.AdminConsoleAPIDomain + "/deployment/sites?"
 
-	var resultResp socialProviderList
+	var resultResp domainManagement
 	resp, err := request.Rest(http.MethodGet, url, nil, "")
 	err = json.Unmarshal(resp, &resultResp)
 	if err != nil {
