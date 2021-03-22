@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/MakeNowJust/heredoc"
 	"github.com/loginradius/lr-cli/cmdutil"
 	"github.com/loginradius/lr-cli/config"
 	"github.com/loginradius/lr-cli/request"
@@ -30,35 +29,30 @@ func NewemailCmd() *cobra.Command {
 		Use:     "email",
 		Short:   "set email config",
 		Long:    `This commmand sets email config`,
-		Example: heredoc.Doc(`$ lr set email --email_link_expire <email_link_expire> --email_notif_count <email_notif_count> --email_notif_frequency <email_notif_frequency>`),
+		Example: `$ lr set email`,
 		RunE: func(cmd *cobra.Command, args []string) error {
-			var intpointer1 *int
-			intpointer1 = &opts.EmailLinkExpire
-			var intpointer2 *int
-			intpointer2 = &opts.EmailNotificationCount
-			var intpointer3 *int
-			intpointer3 = &opts.EmailNotificationFrequency
 
-			if intpointer1 == nil {
+			if opts.EmailLinkExpire == 0 {
 				return &cmdutil.FlagError{Err: errors.New("`email_link_expire` is require argument")}
 			}
 
-			if intpointer2 == nil {
+			if opts.EmailNotificationCount == 0 {
 				return &cmdutil.FlagError{Err: errors.New("`email_notif_count` is require argument")}
 			}
 
-			if intpointer3 == nil {
+			if opts.EmailNotificationFrequency == 0 {
 				return &cmdutil.FlagError{Err: errors.New("`email_notif_frequency` is require argument")}
 			}
+			fmt.Printf(string(rune(opts.EmailLinkExpire)))
 			return set(opts.EmailLinkExpire, opts.EmailNotificationCount, opts.EmailNotificationFrequency)
 
 		},
 	}
 	fl := cmd.Flags()
 
-	fl.IntVarP(&opts.EmailLinkExpire, "email_link_expire", "a", 10080, "usage")
-	fl.IntVarP(&opts.EmailNotificationCount, "email_notif_count", "b", 3, "usage")
-	fl.IntVarP(&opts.EmailNotificationFrequency, "email_notif_frequency", "c", 1440, "domain name")
+	fl.IntVarP(&opts.EmailLinkExpire, "email_link_expire", "a", 0, "usage")
+	fl.IntVarP(&opts.EmailNotificationCount, "email_notif_count", "b", 0, "usage")
+	fl.IntVarP(&opts.EmailNotificationFrequency, "email_notif_frequency", "c", 0, "domain name")
 
 	return cmd
 }
