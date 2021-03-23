@@ -94,6 +94,10 @@ func getSecret() (*cmdutil.APICred, error) {
 			return nil, err
 		}
 		err = json.Unmarshal(resp, &res)
+		err = cmdutil.StoreAPICreds(&res)
+		if err != nil {
+			return nil, err
+		}
 		return &res, nil
 	}
 
