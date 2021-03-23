@@ -1,6 +1,7 @@
 package root
 
 import (
+	"github.com/loginradius/lr-cli/cmd/resetSecret"
 	"github.com/loginradius/lr-cli/cmd/set"
 
 	"github.com/loginradius/lr-cli/cmd/delete"
@@ -43,6 +44,9 @@ func NewRootCmd() *cobra.Command {
 
 	setCmd := set.NewsetCmd()
 	rootCmd.AddCommand(setCmd)
+
+	resetCmd := resetSecret.NewResetCmd()
+	rootCmd.AddCommand((resetCmd))
 
 	// Here you will define your flags and configuration settings.
 	// Cobra supports persistent flags, which, if defined here,
