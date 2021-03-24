@@ -23,6 +23,12 @@ func NewRootCmd() *cobra.Command {
 		Long:  `LoginRadius CLI to support LoginRadius API's and workflow`,
 	}
 
+	helpHelper := func(command *cobra.Command, args []string) {
+		rootHelpFunc(command, args)
+	}
+
+	rootCmd.SetHelpFunc(helpHelper)
+
 	// Authentication Commands
 	loginCmd := login.NewLoginCmd()
 	rootCmd.AddCommand((loginCmd))
