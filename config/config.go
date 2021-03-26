@@ -13,6 +13,7 @@ type Config struct {
 	LoginRadiusAPIKey     string `mapstructure:"LOGINRADIUS_API_KEY"`
 	LoginRadiusAPIDomain  string `mapstructure:"LOGINRADIUS_API_DOMAIN"`
 	AdminConsoleAPIDomain string `mapstructure:"ADMINCONSOLE_API_DOMAIN"`
+	HubPageDomain         string `mapstructure:"HUB_PAGE_DOMAIN"`
 }
 
 // Singleton instance of config
