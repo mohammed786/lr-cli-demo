@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/MakeNowJust/heredoc"
 	"github.com/loginradius/lr-cli/cmd/verify/resend"
 	"github.com/loginradius/lr-cli/cmdutil"
 	"github.com/loginradius/lr-cli/config"
@@ -14,8 +15,7 @@ import (
 )
 
 type VerifyOpts struct {
-	Email    string `json:"Email"`
-	Username string `json:"Username"`
+	Email string `json:"Email"`
 }
 
 type Result struct {
@@ -30,13 +30,14 @@ func NewVerifyCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "verify",
 		Short: "Verify Email/Password",
-		Long:  `This commmand verfies if email/username exists on your site or not`,
+		Long: heredoc.Doc(`This commmand verfies if email/username exists on your site or not
+		`),
+		Example: heredoc.Doc(`
+			$ lr verify -e <email> 
+		`),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			if opts.Email == "" && opts.Username == "" {
-				return &cmdutil.FlagError{Err: errors.New("`--email` or `--username` is require argument")}
-			}
-			if opts.Email != "" && opts.Username != "" {
-				return &cmdutil.FlagError{Err: errors.New("Enter only `--email` or `--username` is require argument")}
+			if opts.Email == "" {
+				return &cmdutil.FlagError{Err: errors.New("`--email` is require argument")}
 			}
 			return verify(opts)
 
@@ -47,19 +48,18 @@ func NewVerifyCmd() *cobra.Command {
 
 	fl := cmd.Flags()
 	fl.StringVarP(&opts.Email, "email", "e", "", "Email Value")
-	fl.StringVarP(&opts.Username, "username", "u", "", "Username value")
 
 	return cmd
 }
 
 func verify(opts *VerifyOpts) error {
 	conf := config.GetInstance()
-	if opts.Username != "" && opts.Email == "" {
-		url = conf.LoginRadiusAPIDomain + "/identity/v2/auth/username?apikey=" + conf.LoginRadiusAPIKey + "&username=" + opts.Username
-	} else if opts.Email != "" && opts.Username == "" {
-		url = conf.LoginRadiusAPIDomain + "/identity/v2/auth/email?apikey=" + conf.LoginRadiusAPIKey + "&email=" + opts.Email
-	} else {
-		fmt.Println("Use paramters correctly")
+	apiObj, err := getSecret()
+	if err != nil {
+		return err
+	}
+	if opts.Email != "" {
+		url = conf.LoginRadiusAPIDomain + "/identity/v2/auth/email?apikey=" + apiObj.Key + "&email=" + opts.Email
 	}
 	var resultResp Result
 	resp, err := request.Rest(http.MethodGet, url, nil, "")
@@ -69,4 +69,26 @@ func verify(opts *VerifyOpts) error {
 	}
 	fmt.Println(resultResp.IsExist)
 	return nil
+}
+
+func getSecret() (*cmdutil.APICred, error) {
+	res, _ := cmdutil.GetAPICreds()
+	if res != nil {
+		return res, nil
+	} else {
+		var res cmdutil.APICred
+		conf := config.GetInstance()
+		siteURL := conf.AdminConsoleAPIDomain + "/deployment/sites?"
+		resp, err := request.Rest(http.MethodGet, siteURL, nil, "")
+		if err != nil {
+			return nil, err
+		}
+		err = json.Unmarshal(resp, &res)
+		err = cmdutil.StoreAPICreds(&res)
+		if err != nil {
+			return nil, err
+		}
+		return &res, nil
+	}
+
 }
