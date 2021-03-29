@@ -56,9 +56,9 @@ func GenMarkdownTreeCustom(cmd *cobra.Command, dir string) error {
 		}
 	}
 
-	basename := strings.Replace(cmd.CommandPath(), " ", "_", -1) + ".md"
+	basename := strings.Replace(cmd.CommandPath(), " ", "_", -1) + ".mdx"
 	if basenameOverride, found := cmd.Annotations["markdown:basename"]; found {
-		basename = basenameOverride + ".md"
+		basename = basenameOverride + ".mdx"
 	}
 
 	filename := filepath.Join(dir, basename)
@@ -98,12 +98,12 @@ func printOptions(buf *bytes.Buffer, cmd *cobra.Command, name string) error {
 
 func filePrepender(filename string) string {
 	return `---
-layout: manual
-permalink: /:path/:basename
+title: Manual
+description: A LoginRadius CLI Manual
 ---
 `
 }
 
 func linkHandler(name string) string {
-	return fmt.Sprintf("./%s", strings.TrimSuffix(name, ".md"))
+	return fmt.Sprintf("./%s", strings.TrimSuffix(name, ".mdx"))
 }
