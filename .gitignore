@@ -14,9 +14,11 @@
 vendor/
 .idea/
 tmp/
+bin/
 
-# env
-*.env
+## Documentation
+manual/
+
 
 #release
 dist/

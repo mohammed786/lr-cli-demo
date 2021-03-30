@@ -2,9 +2,10 @@ package login
 
 import (
 	"encoding/json"
-	"errors"
+	"fmt"
 	"log"
 	"net/http"
+	"time"
 
 	"github.com/MakeNowJust/heredoc"
 
@@ -19,9 +20,13 @@ type LoginOpts struct {
 	Password string `json:"Password"`
 }
 
+// temparary Server
+var tempToken string
+var tempServer *cmdutil.TempServer
+
 func NewLoginCmd() *cobra.Command {
 
-	opts := &LoginOpts{}
+	conf := config.GetInstance()
 	cmd := &cobra.Command{
 		Use:   "login",
 		Short: "Login to LR account",
@@ -29,15 +34,10 @@ func NewLoginCmd() *cobra.Command {
 			This commmand logs user into the LR account.
 		`),
 		Example: heredoc.Doc(`
-			$ lr login -e <email> -p <password>
+		    # Opens Interactive Mode
+			$ lr login
 		`),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			if opts.Email == "" {
-				return &cmdutil.FlagError{Err: errors.New("`--email` is require argument")}
-			}
-			if opts.Password == "" {
-				return &cmdutil.FlagError{Err: errors.New("`--password` is require argument")}
-			}
 			isValid, err := validateLogin()
 
 			if err != nil {
@@ -46,44 +46,37 @@ func NewLoginCmd() *cobra.Command {
 				log.Printf("%s", "You are already been logged in")
 				return nil
 			}
-			return doLogin(opts)
+			cmdutil.Openbrowser(conf.HubPageDomain + "/auth.aspx?return_url=http://localhost:8089/postLogin")
+			tempServer = cmdutil.CreateTempServer(cmdutil.TempServer{
+				Port:        ":8089",
+				HandlerFunc: getAccessToken,
+			})
+			tempServer.Server.ListenAndServe()
+			return doLogin(tempToken)
 		},
 	}
-	fl := cmd.Flags()
-	fl.StringVarP(&opts.Email, "email", "e", "", "Email Value")
-	fl.StringVarP(&opts.Password, "password", "p", "", "Password value")
 
 	return cmd
 }
 
-func doLogin(opts *LoginOpts) error {
+func getAccessToken(w http.ResponseWriter, r *http.Request) {
+	tempToken = r.URL.Query().Get("token")
+	log.Println("Getting Token..." + tempToken)
+	fmt.Fprintf(w, "You are Successfully Authenticated, Kindly Close this browser window and go back to CLI")
+	time.AfterFunc(1*time.Second, tempServer.CloseServer)
+}
+
+func doLogin(accessToken string) error {
 	conf := config.GetInstance()
-	hubPageURL := conf.LoginRadiusAPIDomain + "/identity/v2/auth/login/2FA?apiKey=" + conf.LoginRadiusAPIKey
-	body, _ := json.Marshal(opts)
-	resp, err := request.Rest(http.MethodPost, hubPageURL, nil, string(body))
-	if err != nil {
-		return err
-	}
-
-	// Identity API
-	var identityResp cmdutil.Token
-	err = json.Unmarshal(resp, &identityResp)
-	if err != nil {
-		return err
-	}
-
-	if identityResp.AccessToken == "" {
-		return errors.New("Unable to get the Access token")
-	}
 
 	// Admin Console Backend API
 	var resObj cmdutil.LoginResponse
 
 	backendURL := conf.AdminConsoleAPIDomain + "/auth/login"
-	body, _ = json.Marshal(map[string]string{
-		"accesstoken": identityResp.AccessToken,
+	body, _ := json.Marshal(map[string]string{
+		"accesstoken": accessToken,
 	})
-	resp, err = request.Rest(http.MethodPost, backendURL, nil, string(body))
+	resp, err := request.Rest(http.MethodPost, backendURL, nil, string(body))
 
 	err = json.Unmarshal(resp, &resObj)
 	if err != nil {
@@ -94,6 +87,10 @@ func doLogin(opts *LoginOpts) error {
 }
 
 func validateLogin() (bool, error) {
+	_, err := cmdutil.GetCreds()
+	if err != nil {
+		return false, nil
+	}
 	conf := config.GetInstance()
 	validateURL := conf.AdminConsoleAPIDomain + "/auth/validatetoken"
 	resp, err := request.Rest(http.MethodGet, validateURL, nil, "")
